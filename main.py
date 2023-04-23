@@ -26,9 +26,10 @@ pw = wificonfig['pw']
 wlan.connect(ssid, pw)
 
 #setup LEDs and potentiometer
-led = machine.Pin('LED', machine.Pin.OUT)
-redLed = machine.Pin(15, machine.Pin.OUT)
-pot = machine.ADC(26);
+led = machine.Pin('LED', machine.Pin.OUT)   # green LED (in circuit)
+redLed = machine.Pin(15, machine.Pin.OUT)   # red LED
+pot = machine.ADC(26);                      # potentiometer
+sw = machine.Pin(13, machine.Pin.IN)                # toggle switch
 
 sensor_temp = machine.ADC(4)
 conversion_factor = 3.3 / (65535)
@@ -127,7 +128,9 @@ while True:
         response = '{ '
         response = response + '"redled": "' + str(redLed.value()) + '", '
         response = response + '"pot": "' + str(potV) + '", '
+        response = response + '"switch": "' + str(sw.value()) + '", '
         response = response + '"temp": "' + str(temperature) + '" '
+
         response = response + ' }'
         
         cl.send('HTTP/1.0 200 OK\r\nContent-type:application/vnd.api+json\r\nAccess-Control-Allow-Origin:*\r\n\r\n')
