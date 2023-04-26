@@ -29,7 +29,8 @@ wlan.connect(ssid, pw)
 led = machine.Pin('LED', machine.Pin.OUT)   # green LED (in circuit)
 redLed = machine.Pin(15, machine.Pin.OUT)   # red LED
 pot = machine.ADC(26);                      # potentiometer
-sw = machine.Pin(13, machine.Pin.IN)                # toggle switch
+sw = machine.Pin(13, machine.Pin.IN)        # toggle switch
+btn = machine.Pin(12, machine.Pin.IN, machine.Pin.PULL_UP)       # button switch
 
 sensor_temp = machine.ADC(4)
 conversion_factor = 3.3 / (65535)
@@ -91,6 +92,7 @@ s.bind(addr)
 s.listen(1)
 
 print('Listening on', addr)
+print('Button', btn.value())
 
 # Listen for connections
 while True:
@@ -123,12 +125,18 @@ while True:
             print('LED Blink')
             blink_onboard_led(10)
             
+        if btn.value() == 0:
+            led.on()
+        else:
+            led.off()
+        
         potV = 100 * (pot.read_u16() / 3000);
-
+        
         response = '{ '
         response = response + '"redled": "' + str(redLed.value()) + '", '
         response = response + '"pot": "' + str(potV) + '", '
         response = response + '"switch": "' + str(sw.value()) + '", '
+        response = response + '"button": "' + str(btn.value()) + '", '
         response = response + '"temp": "' + str(temperature) + '" '
 
         response = response + ' }'
